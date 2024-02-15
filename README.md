@@ -1,2 +1,2 @@
 # CAPYBARA
-[[https://github.com/Zhou-lab-SUDA/CAPYBARA/blob/main/icon.png]]
+![Image text](https://github.com/Zhou-lab-SUDA/CAPYBARA/blob/main/icon.png)
