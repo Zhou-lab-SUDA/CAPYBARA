@@ -6,7 +6,7 @@ Arguments:
 
   -t THREADS, --threads THREADS
   
-                        -t/--threads Tree file in newick format.
+                        -t/--threads Threads used for analysis. Default as 8.
   -o OUTPUT, --output OUTPUT
   
                         -p/--prefix Prefix for output file. Default as Capy.
