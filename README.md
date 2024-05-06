@@ -32,7 +32,7 @@ $ Capy.py -i Examples/2.5.6.fna
 
 It will generate a report file for Examples/2.5.6.fna about its population.
 
-A single run for an assembled genome will finish <3 minutes for a 4 CPUs laptop.
+A single run for an assembled genome will finish <3 minutes for a 4 CPUs laptop (>10 minutes for short reads).
 
 ## Usage
 
