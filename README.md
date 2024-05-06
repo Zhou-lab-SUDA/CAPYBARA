@@ -1,4 +1,3 @@
-<img src="https://github.com/Zhou-lab-SUDA/CAPYBARA/blob/main/icon.png" width="300px">
 # CAPYBARA
 
 Capybara, a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>
@@ -78,6 +77,7 @@ A basic run for Capybara is as follows:
 
 
 Workflow chart:
+
 <img src="https://github.com/Zhou-lab-SUDA/CAPYBARA/blob/main/workflow.png" width="300px">
 
 ### Reproduction Instructions
