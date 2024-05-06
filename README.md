@@ -22,6 +22,12 @@ You can easily install these packages using command below:
 conda install -c bio-conda samtools bcftools minimap2 mash
 ~~~~~~~~~~
 
+Then you can use git to clone Capybara into your PC.
+
+~~~~~~~~~~
+git clone git@github.com:Zhou-lab-SUDA/CAPYBARA.git
+~~~~~~~~~~
+
 ## Quick Start (with examples)
 
 ~~~~~~~~~~
