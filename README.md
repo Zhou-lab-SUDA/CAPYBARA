@@ -3,7 +3,7 @@
 Capybara, a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>
 
 
-Capybara enables you to identify hierarchical populations in epidemic super-lineage (ESL) of <i>Acinetobacter baumannii</i> using a set of core-genome SNPs. For ESL or citation of Capybara, see DOI:[[10.21203/rs.3.rs-4129268/v1]]
+Capybara enables you to identify hierarchical populations in epidemic super-lineage (ESL) of <i>Acinetobacter baumannii</i> using a set of core-genome SNPs. For ESL or citation of Capybara, see DOI:<10.21203/rs.3.rs-4129268/v1>
 
 ## Installation:
 
