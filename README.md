@@ -87,7 +87,7 @@ Workflow chart:
 <img src="https://github.com/Zhou-lab-SUDA/CAPYBARA/blob/main/workflow.png" width="300px">
 
 ### Reproduction Instructions
-All data required for reproduction of the analysis were distributed in this repository under xxx/x/xx/
+All data required for reproduction of the analysis were distributed in this repository under CAPYBARA/capydb/
 
 which included:
 * esl/esl.fna
