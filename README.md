@@ -71,14 +71,14 @@ Capybara generates a report file in format below:
 ### Work flow
 
 A basic run for Capybara is as follows: 
-* (1) ESL identification: 
+* **ESL identification: **
 	* We pre-sketched all 5,824 representative genomes. Genetic distance between query data and pre-sketched data will be evaluated to find the most closed genomes.
 	* If query data does not contains any sequential information related to ESL genomes, it will be classified as non-ESL. Otherwise, it will be analyzed as follows.
-* (2) Sequential alignment: 
+* **Sequential alignment: **
 	* Query data will be aligned onto ESL's reference genome (MDR-TJ:GCF_000187205.2) to generate a BAM file.
-* (3) SNP calling:
+* **SNP calling:**
 	* A series SNPs will be called from BAM and then generate an VCF file.
-* (4) Population assignment:
+* **Population assignment:**
 	* Using a pre-built SNP scheme to assign hierarchical population of query data.
 
 
