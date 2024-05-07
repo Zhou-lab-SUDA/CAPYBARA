@@ -1,36 +1,47 @@
 """Author: Naclist
 Contact: Zxzzzhu@gmail.com
 Update time: 2024/5/6
-version: 1.1 Beta"""
-
+Version: 1.1 Beta"""
 
 from shutil import which
 import os
 
-exe = dict(minimap2=which('minimap2'),
-           mash=which('mash'),
-           samtools=which('samtools'),
-           bcftools=which('bcftools'))
+# Define paths to external executable tools
+exe = {
+    'minimap2': which('minimap2'),
+    'mash': which('mash'),
+    'samtools': which('samtools'),
+    'bcftools': which('bcftools')
+}
 
+# Get the directory of the current script
 dirname = os.path.dirname(os.path.abspath(__file__))
 
+# Define database folders
 db_folder = os.path.join(dirname, 'capydb')
 hc_ref = os.path.join(db_folder, 'hc1030_ref.fna')
 
+# Define ESL related paths
 esl_folder = os.path.join(db_folder, 'esl')
-esl_list = dict(esl_ref=os.path.join(esl_folder, 'esl_ref.fna'),
-                lineage_snp=os.path.join(esl_folder, 'lineage.SNP'),
-                variant_snp=os.path.join(esl_folder, 'variant.SNP'))
+esl_list = {
+    'esl_ref': os.path.join(esl_folder, 'esl_ref.fna'),
+    'lineage_snp': os.path.join(esl_folder, 'lineage.SNP'),
+    'variant_snp': os.path.join(esl_folder, 'variant.SNP')
+}
 
+# Define mash folder and related lists
 msh_folder = os.path.join(db_folder, 'msh')
 cc_mash_list = os.path.join(msh_folder, 'cc.mash.list')
 
+# Create dictionaries to hold genome data
 genome_cc_dict = {}
 genomes_msh_list = []
+
+# Populate the genome_cc_dict and genomes_msh_list from cc.mash.list
 with open(cc_mash_list) as cc_mash:
-    for i in cc_mash:
-        part = i.rstrip().split('\t')
-        [genome, cc] = part
+    for line in cc_mash:
+        part = line.rstrip().split('\t')
+        genome, cc = part
         genome_cc_dict[genome] = cc
         genomes_msh_list.append(os.path.join(msh_folder, '.'.join([genome, 'msh'])))
 
