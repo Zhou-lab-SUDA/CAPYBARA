@@ -33,7 +33,7 @@ git clone git@github.com:Zhou-lab-SUDA/CAPYBARA.git
 ~~~~~~~~~~
 $ cd /path/to/Capybara/
 
-$ Capy.py -i Examples/2.5.6.fna
+$ capy.py -i Examples/2.5.6.fna
 ~~~~~~~~~~
 
 It will generate a report file for Examples/2.5.6.fna about its population.
@@ -43,7 +43,7 @@ A single run for an assembled genome will finish <3 minutes for a 4 CPUs laptop 
 ## Usage
 
 ~~~~~~~~~~
-$ Usage: Capy.py [OPTIONS]
+$ Usage: capy.py [OPTIONS]
 
 Options:
 
