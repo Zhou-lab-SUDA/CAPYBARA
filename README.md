@@ -97,3 +97,9 @@ Reference genome for ESL.
 * msh/*.msh
 ~~~
 5,824 pre-sketched files by Mash sketch.
+~~~
+### Our pulished release
+You may also be interested [KleTy](https://github.com/Zhou-lab-SUDA/KleTy), a pipeline for analysis of Klebsiella and can also genotype plasmids from short-reads file.
+
+
+<a href="https://zenodo.org/doi/10.5281/zenodo.11349698"><img src="https://zenodo.org/badge/803854575.svg" alt="DOI"></a>
