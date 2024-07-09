@@ -1,13 +1,17 @@
 # CAPYBARA
 
-Capybara, a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>
+Capybara is a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>. It screens either raw reads or assemblies for :
 
+* Identifying whether a query belongs to the epidemic super-lineage (ESL), a super-set of two predominant international clones: IC1 and IC2.
+* Assignment of query strain into one of the lineages, clades, and genotypes in the ESL based on a pre-curated set of SNPs. 
 
-Capybara enables you to identify hierarchical populations in epidemic super-lineage (ESL) of <i>Acinetobacter baumannii</i> using a set of core-genome SNPs. For ESL or citation of Capybara, see DOI: [10.21203/rs.3.rs-4129268/v1](https://doi.org/10.21203/rs.3.rs-4224555/v1).
+## Citation
+Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, **Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii* **, https://doi.org/10.21203/rs.3.rs-4224555/v1
+
 
 ## Installation:
 
-Capybara was devoloped and tested in Python 3.9.0, and requires a several modules:
+Capybara was devoloped and tested in Python 3.9.0, and requires several modules:
 
 ~~~~~~~~~~
 minimap2
