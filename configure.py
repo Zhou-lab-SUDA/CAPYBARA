@@ -24,14 +24,16 @@ dirname = os.path.dirname(os.path.abspath(__file__))
 # Define database folders
 db_folder = os.path.join(dirname, 'capydb')
 hc_ref = os.path.join(db_folder, 'hc1030_ref.fna')
+hc_snps = os.path.join(db_folder, 'hc1030.snp')
 
 # Define ESL related paths
 esl_folder = os.path.join(db_folder, 'esl')
 esl_list = {
     'esl_ref': os.path.join(esl_folder, 'esl_ref.fna'),
-    'lineage_snp': os.path.join(esl_folder, 'lineage.SNP'),
-    'variant_snp': os.path.join(esl_folder, 'variant.SNP')
 }
+l_snp = os.path.join(esl_folder, 'lineage.SNP'),
+g_snp = os.path.join(esl_folder, 'genotype.SNP')
+
 
 # Define mash folder and related lists
 msh_folder = os.path.join(db_folder, 'msh')
@@ -50,8 +52,14 @@ with open(cc_mash_list) as cc_mash:
         genomes_msh_list.append(os.path.join(msh_folder, '.'.join([genome, 'msh'])))
 
 # A series of SNPs for identifying GC1 and GC2
+hc1030_snp = {}
+with open(hc_snps) as hs:
+    for hccs in hs:
+        part = hccs.rstrip().split('\t')
+        [site, hc12, refbase, altbase] = part
+        hc1030_snp[int(site)] = [hc12, refbase, altbase]
 
-hc1030_snp = {1324677: ['GC1', 'T', 'C'],
+'''hc1030_snp = {1324677: ['GC1', 'T', 'C'],
               1330326: ['GC1', 'A', 'G'],
               1504581: ['GC1', 'T', 'C'],
               1674628: ['GC1', 'C', 'T'],
@@ -73,11 +81,18 @@ hc1030_snp = {1324677: ['GC1', 'T', 'C'],
               2016630: ['GC2', 'G', 'T'],
               2035410: ['GC2', 'G', 'A'],
               2035459: ['GC2', 'T', 'A'],
-              }
+              }'''
 
 # A series of SNPs for identifying lineages
 
-lineage_snp = {29867: ['1.1', 'G', 'T'],
+lineage_snp = {}
+with open(l_snp) as ls:
+    for lss in ls:
+        part = lss.rstrip().split('\t')
+        [site, lineage, refbase, altbase] = part
+        lineage_snp[int(site)] = [lineage, refbase, altbase]
+
+'''lineage_snp = {29867: ['1.1', 'G', 'T'],
                1417459: ['1.2', 'C', 'T'],
                1410148: ['1.3', 'G', 'A'],
                266654: ['1.4', 'A', 'G'],
@@ -85,11 +100,18 @@ lineage_snp = {29867: ['1.1', 'G', 'T'],
                592890: ['2.2', 'A', 'G'],
                266845: ['2.3', 'G', 'T'],
                2110750: ['2.5', 'T', 'A'],
-               }
+               }'''
 
 # A series of SNPs for identifying variants
 
-variant_snp = {161777: ['1.1.1', 'C', 'T'],
+genotype_snp = {}
+with open(g_snp) as gs:
+    for gss in gs:
+        part = gss.rstrip().split('\t')
+        [site, genotype, refbase, altbase] = part
+        genotype_snp[int(site)] = [genotype, refbase, altbase]
+
+'''variant_snp = {161777: ['1.1.1', 'C', 'T'],
                2028825: ['1.2.1', 'T', 'A'],
                2312839: ['1.2.2', 'G', 'T'],
                2223946: ['1.3.10', 'G', 'C'],
@@ -139,4 +161,4 @@ variant_snp = {161777: ['1.1.1', 'C', 'T'],
                454398: ['2.4.6', 'C', 'T'],
                3259086: ['2.4.7', 'T', 'G'],
                1040967: ['2.4.9', 'C', 'A']
-               }
+               }'''
