@@ -6,11 +6,11 @@ Capybara is a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>
 * Assignment of query strain into one of the lineages, clades, and genotypes in the ESL based on a pre-curated set of SNPs. 
 
 ## Citation
-Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, **Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii* **, https://doi.org/10.21203/rs.3.rs-4224555/v1
+Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii*, https://doi.org/10.21203/rs.3.rs-4224555/v1
 
+------
 
 ## Installation:
-
 Capybara was devoloped and tested in Python 3.9.0, and requires several modules:
 
 ~~~~~~~~~~
