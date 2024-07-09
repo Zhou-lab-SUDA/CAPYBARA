@@ -12,7 +12,7 @@ import os
 import subprocess
 import tempfile
 import argparse
-from configure import genome_cc_dict, genomes_msh_list, exe, esl_list, variant_snp, hc1030_snp, hc_ref
+from configure import genome_cc_dict, genomes_msh_list, exe, esl_list, genotype_snp, hc1030_snp, hc_ref
 
 # External executable paths
 mash = exe['mash']
