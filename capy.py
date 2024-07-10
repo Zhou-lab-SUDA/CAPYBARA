@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser(
 
 # Mutually exclusive group for input arguments
 group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-i', '--query', type=str, help='-i/--input [Required] Input data, both assembled genome or short reads are acceptable.')
+group.add_argument('-i', '--query', type=str, help='-i/--query [Required] Input data, both assembled genome or short reads are acceptable.')
 group.add_argument('-l', '--list', type=str, help='-l/--list [Optional] A file containing list of query files, one per line.')
 
 # Additional optional arguments
