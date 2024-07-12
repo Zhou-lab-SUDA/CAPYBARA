@@ -3,7 +3,7 @@
 Capybara is a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>. It screens either raw reads or assemblies for :
 
 * Identifying whether a query belongs to the epidemic super-lineage (ESL), a super-set of two predominant international clones: IC1 and IC2.
-* Assignment of query strain into one of the lineages, clades, and genotypes in the ESL based on a pre-curated set of SNPs. 
+* Assignment of query strain into one of the lineages, clusters, and clades in the ESL based on a pre-curated set of SNPs. 
 
 ## Citation
 Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii*, https://doi.org/10.21203/rs.3.rs-4224555/v1
@@ -65,7 +65,7 @@ Options:
 
 Capybara generates a report file in format below:
 
-| query | ESL | Lineage | Variant |
+| query | ESL | Clusters | Clades |
 | ---- | ---- | ---- | ---- |
 | 2.5.6.fna | True | 2.5 | 2.5.6 |
 | IC7.fna | False | - | - |
