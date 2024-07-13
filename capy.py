@@ -122,7 +122,7 @@ def esl_snp(genome):
 # Main execution flow
 def main():
     output_rows = []
-    header = ['query', 'ESL', 'Variant', 'Coverage()']
+    header = ['query', 'ESL', 'Clade', 'Coverage']
     esl_marker = 0
 
     # Determine the source of input files
