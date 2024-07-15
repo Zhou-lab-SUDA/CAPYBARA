@@ -37,7 +37,7 @@ git clone git@github.com:Zhou-lab-SUDA/CAPYBARA.git
 ~~~~~~~~~~
 $ cd /path/to/Capybara/
 
-$ capy.py -i Examples/2.5.6.fna
+$ capy.py -i Examples/2.5.6.fa
 ~~~~~~~~~~
 
 It will generate a report file for Examples/2.5.6.fa about its population.
