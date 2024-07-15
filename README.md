@@ -67,8 +67,8 @@ Capybara generates a report file in format below:
 
 | query | ESL | Clades | Coverage |
 | ---- | ---- | ---- | ---- |
-| 2.5.6.fna | True | 2.5.6 | 30.4183 |
-| IC7.fna | False | - | - |
+| 2.5.6.fa | True | 2.5.6 | 30.4183 |
+| Non-esl.fa | False | - | - |
 
 ## Work flow and Reproduction Instructions
 
