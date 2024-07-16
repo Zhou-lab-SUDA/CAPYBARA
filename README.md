@@ -23,7 +23,7 @@ bcftools
 You can easily install these packages using command below:
 
 ~~~~~~~~~~
-conda install -c bio-conda samtools bcftools minimap2 mash
+conda install -c bioconda samtools bcftools minimap2 mash
 ~~~~~~~~~~
 
 Then you can use git to clone Capybara into your PC.
@@ -37,7 +37,7 @@ git clone git@github.com:Zhou-lab-SUDA/CAPYBARA.git
 ~~~~~~~~~~
 $ cd /path/to/Capybara/
 
-$ capy.py -i Examples/2.5.6.fa
+$ python capy.py -i Examples/2.5.6.fa
 ~~~~~~~~~~
 
 It will generate a report file for Examples/2.5.6.fa about its population.
