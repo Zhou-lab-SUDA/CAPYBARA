@@ -1,7 +1,7 @@
 """Author: Naclist
 Contact: Zxzzzhu@gmail.com
 Update time: 2024/7/14
-Version: 1.1 Beta
+Version: 1.1.2 Beta
 
 This file is part of Capybara, a Core-snp Assignment PYthon tool for Acinetobacter baumannii, which is totally free to use and redevelop based on the GNU General Public License. Capybara is designed for pathogen detection and is not for profit. For more detailed information on the usage of the program, please refer to the original GNU license text: http://www.gnu.org/licenses/
 
