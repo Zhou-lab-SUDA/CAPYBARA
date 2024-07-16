@@ -115,8 +115,8 @@ def esl_snp(genome):
         vcf_dict = parse_vcf(vcf_file)
         mapped_esl = []
         for site in vcf_dict:
-            if site in variant_snp:
-                mapped_esl.append((variant_snp[site][0], vcf_dict[site][2]))
+            if site in genotype_snp:
+                mapped_esl.append((genotype_snp[site][0], vcf_dict[site][2]))
         return mapped_esl
 
 # Main execution flow
@@ -130,11 +130,13 @@ def main():
 
     # Process each file for SNP mapping and variant detection
     for query in files_to_process:
-        mapped_hcs = find_hc1030_mapping(query)
-        GC1_count = sum(1 for i in mapped_hcs if i[0] == 'GC1')
-        GC2_count = sum(1 for i in mapped_hcs if i[0] == 'GC2')
+        mapped_hcs = find_hc1030(query)
+        print(mapped_hcs)
+        
+        GC1_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST1' else 0
+        GC2_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST2' else 0
 
-        esl_detected = GC1_count > 12 or GC2_count > 4
+        esl_detected = GC1_count > 0 or GC2_count > 0
         esl_marker += esl_detected
 
         # Collect results for detected ESL markers
