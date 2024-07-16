@@ -31,7 +31,7 @@ esl_folder = os.path.join(db_folder, 'esl')
 esl_list = {
     'esl_ref': os.path.join(esl_folder, 'esl_ref.fna'),
 }
-l_snp = os.path.join(esl_folder, 'lineage.snp'),
+l_snp = os.path.join(esl_folder, 'lineage.snp')
 g_snp = os.path.join(esl_folder, 'genotype.snp')
 
 
