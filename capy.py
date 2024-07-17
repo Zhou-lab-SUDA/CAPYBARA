@@ -131,7 +131,6 @@ def main():
     # Process each file for SNP mapping and variant detection
     for query in files_to_process:
         mapped_hcs = find_hc1030(query)
-        print(mapped_hcs)
         
         GC1_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST1' else 0
         GC2_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST2' else 0
