@@ -1,6 +1,6 @@
 """Author: Naclist
 Contact: Zxzzzhu@gmail.com
-Update time: 2024/7/14
+Update time: 2024/7/17
 Version: 1.1.2 Beta
 
 This file is part of Capybara, a Core-snp Assignment PYthon tool for Acinetobacter baumannii, which is totally free to use and redevelop based on the GNU General Public License. Capybara is designed for pathogen detection and is not for profit. For more detailed information on the usage of the program, please refer to the original GNU license text: http://www.gnu.org/licenses/
@@ -67,13 +67,14 @@ def find_hc1030(genome):
             return
 
         # Finding the closest genome
-        closest = ['', '', 1, 0.05]  # Default values for comparison
+        closest = ['', '', 10]  # Default values for comparison
         with open(output_dist, 'r') as dists:
             for i in dists:
                 part = i.rstrip().split('\t')
-                genome, mash_dist, p = part[1], float(part[2]), float(part[3])
-                if mash_dist < closest[2] and p < closest[3]:
-                    closest = [genome, genome_cc_dict[genome.replace('.fna.gz', '')], mash_dist, p]
+                refs, mash_dist = part[1], float(part[2])
+                print(part, genome_cc_dict[refs.replace('.fna.gz', '')])
+                if mash_dist < closest[2]:
+                    closest = [refs, genome_cc_dict[refs.replace('.fna.gz', '')], mash_dist]
         return closest
 
 # Function to parse VCF files for identified SNPs
@@ -131,6 +132,7 @@ def main():
     # Process each file for SNP mapping and variant detection
     for query in files_to_process:
         mapped_hcs = find_hc1030(query)
+        print(mapped_hcs)
         
         GC1_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST1' else 0
         GC2_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST2' else 0
