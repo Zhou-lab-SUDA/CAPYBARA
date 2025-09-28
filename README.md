@@ -6,7 +6,7 @@ Capybara is a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>
 * Assignment of query strain into one of the lineages, clusters, and clades in the ESL based on a pre-curated set of SNPs. 
 
 ## Citation
-Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii*, https://doi.org/10.21203/rs.3.rs-4224555/v1
+Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii*, [https://www.nature.com/articles/s41467-025-58106-9](https://www.nature.com/articles/s41467-025-58106-9)
 
 ------
 
@@ -51,24 +51,38 @@ $ Usage: capy.py [OPTIONS]
 
 Options:
 
-  -i, --query TEXT  [Required] Input data, both assembled genome or short reads are acceptable.
+  -i, --input TEXT  [Required] Input data, both assembled genome or short reads are acceptable.
 
-  -p, --prefix TEXT [Optional] Prefix for output file. Default as Capy.
+  -o, --output TEXT [Optional] Prefix for output file. Default as Capy.
 
-  -t, --threads INTEGER [Optional] Number of process to use. default: 8
+  -t, --threads INTEGER [Optional] Number of process to use. default: 4.
 
-  -l, --list TEXT   [Optional] A file containing list of query files, one per line.
+  -m, --metagenomic Metagenomic mode, skip CC assignment.
+
+  --subsample SUBSAMPLE [0-1] Subsample proportion when handling short reads.
+
+  --min-snp-depth MIN_SNP_DEPTH
+
+  --min-allele-frac MIN_ALLELE_FRAC
 
   --help    Show this message and exit.
 
 ~~~~~~~~~~
 
-Capybara generates a report file in format below:
+Capybara generates three report files:
 
-| query | ESL | Clades | Coverage |
-| ---- | ---- | ---- | ---- |
-| 2.5.6.fa | True | 2.5.6 | 30.4183 |
-| Non-esl.fa | False | - | - |
+[Output].summary.tsv:
+| sample | mode | lineage | sublineage | GC1_votes | GC2_votes | reads_total | reads_mapped | breadth | variant_cov | variant_total |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+| 2.5.6.fa | metagenomic | NA | NA | NA | NA | 1472092 | 12905 | 0.001392 | 0 | 50 |
+
+[Output].markers.tsv:
+
+Detailed calling description for each SNP barcode.
+
+[Output].summary.tsv:
+
+Json format SNP coverage summary.
 
 ## Work flow and Reproduction Instructions
 
