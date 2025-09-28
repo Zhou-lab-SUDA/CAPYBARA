@@ -1,164 +1,163 @@
 """Author: Naclist
 Contact: Zxzzzhu@gmail.com
-Update time: 2024/7/17
-Version: 1.1.2 Beta
+Update time: 2025/9/20
+Version: 1.1.3 Beta
 
 This file is part of Capybara, a Core-snp Assignment PYthon tool for Acinetobacter baumannii, which is totally free to use and redevelop based on the GNU General Public License. Capybara is designed for pathogen detection and is not for profit. For more detailed information on the usage of the program, please refer to the original GNU license text: http://www.gnu.org/licenses/
 
+This version is modified to downsample for metagenomic data.
 
 """
 
-import os
-import subprocess
-import tempfile
-import argparse
-from configure import genome_cc_dict, genomes_msh_list, exe, esl_list, genotype_snp, hc1030_snp, hc_ref
-
-# External executable paths
-mash = exe['mash']
-minimap2_exe = exe['minimap2']
-samtools_exe = exe['samtools']
-bcftools_exe = exe['bcftools']
-esl_ref = esl_list['esl_ref']
-
-# Argument parser setup
-parser = argparse.ArgumentParser(
-    description='Capybara, a Core-snp Assignment PYthon tool for Acinetobacter baumannii',
-    add_help=True,
-    usage='Capy.py [OPTIONS]')
-
-# Mutually exclusive group for input arguments
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('-i', '--query', type=str, help='-i/--query [Required] Input data, both assembled genome or short reads are acceptable.')
-group.add_argument('-l', '--list', type=str, help='-l/--list [Optional] A file containing list of query files, one per line.')
-
-# Additional optional arguments
-parser.add_argument('-t', '--threads', type=int, default=8, help='-t/--threads [Optional] Number of processes to use. Default: 8')
-parser.add_argument('-p', '--prefix', required=False, default='Capy', type=str, help='-p/--prefix [Optional] Prefix for output file. Default as Capy')
-
-args = parser.parse_args()
-threads = args.threads if args.threads else 8
-
-# Function to find high-confidence genomes based on mash distance
-def find_hc1030(genome):
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Temporary files setup
-        input_msh = os.path.join(temp_dir, "query.msh")
-        input_msh_list = os.path.join(temp_dir, "mash.list")
-        output_dist = os.path.join(temp_dir, "dist.out")
-
-        # Writing the list of genome mash files
-        with open(input_msh_list, 'w') as iml:
-            for i in genomes_msh_list:
-                print(i, file=iml)
-
-        # Step 1: Sketching the query genome with mash
-        step1 = f"{mash} sketch {genome} -o {input_msh}"
-        result = subprocess.run(step1, shell=True, stderr=subprocess.PIPE, text=True)
-        if result.returncode != 0:
-            print(f"Error executing '{step1}': {result.stderr}")
-            return
-
-        # Step 2: Calculating distance between sketched genomes
-        step2 = f"{mash} dist {input_msh} -l {input_msh_list} > {output_dist}"
-        result = subprocess.run(step2, shell=True, stderr=subprocess.PIPE, text=True)
-        if result.returncode != 0:
-            print(f"Error executing '{step2}': {result.stderr}")
-            return
-
-        # Finding the closest genome
-        closest = ['', '', 10]  # Default values for comparison
-        with open(output_dist, 'r') as dists:
-            for i in dists:
-                part = i.rstrip().split('\t')
-                refs, mash_dist = part[1], float(part[2])
-                print(part, genome_cc_dict[refs.replace('.fna.gz', '')])
-                if mash_dist < closest[2]:
-                    closest = [refs, genome_cc_dict[refs.replace('.fna.gz', '')], mash_dist]
-        return closest
-
-# Function to parse VCF files for identified SNPs
-def parse_vcf(vcf_file):
-    vcf_dict = {}
-    with open(vcf_file, 'rt') as vcf:
-        for line in vcf:
-            if not line.startswith('#'):
-                parts = line.rstrip().split('\t')
-                pos, ref_base, alt_base, quality = int(parts[1]), parts[3], parts[4], parts[5]
-                vcf_dict[pos] = [ref_base, alt_base, quality]
-    return vcf_dict
-
-# Function to perform SNP calling for ESL markers
-def esl_snp(genome):
-    with tempfile.TemporaryDirectory() as temp_dir:
-        # Setup temporary files for sequence alignment and SNP calling
-        mp_sam = os.path.join(temp_dir, "mp.sam")
-        mp_bam = os.path.join(temp_dir, "mp.bam")
-        sorted_bam = os.path.join(temp_dir, "sorted.bam")
-        vcf_file = os.path.join(temp_dir, "vcf.file")
-
-        # Sequence alignment and conversion to binary format
-        step1 = f"{minimap2_exe} -a {esl_ref} {genome} -o {mp_sam} -t {threads}"
-        step2 = f"{samtools_exe} view -bS -o {mp_bam} {mp_sam}"
-        step3 = f"{samtools_exe} sort {mp_bam} -o {sorted_bam}"
-        step4 = f"{samtools_exe} index {sorted_bam}"
-        step5 = f"{bcftools_exe} mpileup -Ou -f {esl_ref} {sorted_bam} | {bcftools_exe} call -mv -Ov -o {vcf_file}"
-
-        # Execute each step and check for errors
-        for step in [step1, step2, step3, step4, step5]:
-            result = subprocess.run(step, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            if result.returncode != 0:
-                print(f"Error executing command: {step}")
-                print(result.stderr)
-                return
-
-        # Analyze VCF for SNP matching
-        vcf_dict = parse_vcf(vcf_file)
-        mapped_esl = []
-        for site in vcf_dict:
-            if site in genotype_snp:
-                mapped_esl.append((genotype_snp[site][0], vcf_dict[site][2]))
-        return mapped_esl
-
-# Main execution flow
+#!/usr/bin/env python3
+from __future__ import annotations
+import argparse,json,os,subprocess,sys,tempfile
+from collections import defaultdict
+from typing import Dict,Iterable,List,Tuple
+from configure import exe,esl_list,lineage_snp,variant_snp
+try:
+    from configure import hc1030_snp,hc_ref
+    HAS_HC=True
+except Exception:
+    hc1030_snp={}
+    hc_ref=None
+    HAS_HC=False
+MINIMAP2=exe.get("minimap2","minimap2")
+SAMTOOLS=exe.get("samtools","samtools")
+BCFTOOLS=exe.get("bcftools","bcftools")
+ESL_REF=esl_list.get("esl_ref")
+def run(cmd:str,check:bool=True)->subprocess.CompletedProcess:
+    proc=subprocess.run(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+    if check and proc.returncode!=0: raise RuntimeError(f"Command failed: {cmd}\nSTDERR:\n{proc.stderr}")
+    return proc
+def first_fasta_header(fasta_path:str)->str:
+    with open(fasta_path,"rt") as fh:
+        for line in fh:
+            if line.startswith(">"): return line[1:].strip().split()[0]
+    raise ValueError(f"No FASTA header in {fasta_path}")
+def write_bed_for_positions(bed_path:str,chrom:str,positions:Iterable[int])->None:
+    with open(bed_path,"wt") as out:
+        for p in sorted(set(int(x) for x in positions)): out.write(f"{chrom}\t{p-1}\t{p}\n")
+def depth_for_positions(bam:str,ref:str,bed_path:str)->Dict[int,int]:
+    with tempfile.TemporaryDirectory() as td:
+        out_tsv=os.path.join(td,"dp.tsv")
+        cmd=f"{BCFTOOLS} mpileup -a DP -f {ref} -R {bed_path} {bam} -Ou | {BCFTOOLS} query -f '%CHROM\t%POS\t%DP\n' > {out_tsv}"
+        run(cmd);dp={}
+        with open(out_tsv,"rt") as fh:
+            for line in fh:
+                _,pos,dp_str=line.rstrip().split("\t")
+                try: dp[int(pos)]=int(dp_str)
+                except: dp[int(pos)]=0
+        return dp
+def targeted_call_with_af(bam:str,ref:str,bed:str,out_vcf:str,threads:int)->None:
+    cmd=f"{BCFTOOLS} mpileup -Ou -f {ref} -R {bed} -a FORMAT/AD,FORMAT/DP {bam} | {BCFTOOLS} call -mv -Ov -o {out_vcf}"
+    run(cmd)
+def parse_vcf_with_af(vcf_path:str)->Dict[int,Tuple[str,str,int,int,float]]:
+    calls={}
+    with open(vcf_path,"rt") as fh:
+        for line in fh:
+            if line.startswith("#"): continue
+            parts=line.rstrip().split("\t");pos=int(parts[1]);ref,alt=parts[3],parts[4];alt0=alt.split(",")[0]
+            fmt=parts[8].split(":") if len(parts)>8 else [];smp=parts[9].split(":") if len(parts)>9 else []
+            ad_ref=ad_alt=dp=0
+            if fmt and smp:
+                idx={k:i for i,k in enumerate(fmt)}
+                if "AD" in idx and idx["AD"]<len(smp):
+                    try: ad=smp[idx["AD"]].split(",");ad_ref=int(ad[0]);ad_alt=int(ad[1]) if len(ad)>1 else 0
+                    except: ad_ref,ad_alt=0,0
+                if "DP" in idx and idx["DP"]<len(smp):
+                    try: dp=int(smp[idx["DP"]])
+                    except: dp=ad_ref+ad_alt
+            denom=max(1,ad_ref+ad_alt);af=ad_alt/denom
+            calls[pos]=(ref,alt0,ad_ref,ad_alt,af)
+    return calls
+def map_to_bam(query:str,ref:str,threads:int,subsample:float,out_bam:str)->None:
+    subs=f"-s {subsample}" if subsample<1.0 else ""
+    cmd=f"{MINIMAP2} -a {ref} {query} -t {threads} | {SAMTOOLS} view -bS {subs} - | {SAMTOOLS} sort -@ {threads} -o {out_bam} -"
+    run(cmd);run(f"{SAMTOOLS} index {out_bam}")
+def samtools_flagstat(bam:str)->Dict[str,int]:
+    out=run(f"{SAMTOOLS} flagstat {bam}").stdout;total=mapped=0
+    for line in out.splitlines():
+        if " in total " in line: total=int(line.split(" ")[0])
+        if " mapped (" in line and " primary " not in line: mapped=int(line.split(" ")[0])
+    return {"total":total,"mapped":mapped}
+def samtools_breadth(bam:str)->float:
+    out=run(f"{SAMTOOLS} coverage {bam}").stdout.strip().splitlines()
+    for line in out:
+        if line.startswith("#"): continue
+        parts=line.split()
+        if len(parts)>=7:
+            try: return float(parts[6])/100.0
+            except: pass
+    return 0.0
+def decide_lineage(lineage_calls:Dict[int,Tuple[str,str,str,int,float]],min_dp:int,min_af:float)->str:
+    votes=defaultdict(int)
+    for pos,(label,exp_ref,exp_alt,dp,af) in lineage_calls.items():
+        if dp>=min_dp and af>=min_af and exp_alt not in (".","N",None): votes[label]+=1
+    if not votes: return "NA"
+    return max(votes.items(),key=lambda x:x[1])[0]
+def decide_sublineage(best_lineage:str,variant_calls:Dict[int,Tuple[str,str,str,int,float]],min_dp:int,min_af:float)->str:
+    hits=[];prefix=best_lineage+"."
+    for pos,(label,exp_ref,exp_alt,dp,af) in variant_calls.items():
+        if not label.startswith(prefix): continue
+        if dp>=min_dp and af>=min_af and exp_alt not in (".","N",None): hits.append((label,af))
+    if not hits: return "NA"
+    hits.sort(key=lambda x:x[1],reverse=True);top_label,top_af=hits[0]
+    if len(hits)>1 and hits[1][1]>=top_af*0.95: return "NA"
+    return top_label
+def evaluate_panel(bam:str,ref:str,panel:Dict[int,Tuple[str,str,str]],min_dp:int,min_af:float)->Tuple[Dict[int,Tuple[str,str,str,int,float]],Dict[int,Tuple[str,str,int,int,float]]]:
+    chrom=first_fasta_header(ref)
+    with tempfile.TemporaryDirectory() as td:
+        bed=os.path.join(td,"panel.bed");write_bed_for_positions(bed,chrom,panel.keys())
+        dp_map=depth_for_positions(bam,ref,bed);vcf=os.path.join(td,"panel.vcf");targeted_call_with_af(bam,ref,bed,vcf,threads=1);vcf_calls=parse_vcf_with_af(vcf)
+    enriched={}
+    for pos,(label,exp_ref,exp_alt) in panel.items():
+        ref,alt,ad_ref,ad_alt,af=vcf_calls.get(pos,(".","",0,0,0.0));dp=dp_map.get(pos,ad_ref+ad_alt)
+        enriched[pos]=(label,exp_ref,exp_alt,dp,af)
+    return enriched,vcf_calls
 def main():
-    output_rows = []
-    header = ['query', 'ESL', 'Clade', 'Coverage']
-    esl_marker = 0
-
-    # Determine the source of input files
-    files_to_process = [args.query] if args.query else open(args.list, 'r').read().splitlines()
-
-    # Process each file for SNP mapping and variant detection
-    for query in files_to_process:
-        mapped_hcs = find_hc1030(query)
-        print(mapped_hcs)
-        
-        GC1_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST1' else 0
-        GC2_count = 1 if mapped_hcs[1] == 'Clonal_complex_of_ST2' else 0
-
-        esl_detected = GC1_count > 0 or GC2_count > 0
-        esl_marker += esl_detected
-
-        # Collect results for detected ESL markers
-        if esl_detected:
-            for j in esl_snp(query):
-                lineage, variant = j
-                output_rows.append([query, str(esl_detected), lineage, variant])
-        else:
-            output_rows.append([query, str(esl_detected), '-', '-'])
-
-    # Write results to a TSV file
-    with open(f'{args.prefix}.tsv', 'w') as capout:
-        print('\t'.join(header), file=capout)
-        for row in output_rows:
-            print('\t'.join(row), file=capout)
-
-    print(f'--Report generated: {args.prefix}.tsv--')
-    if esl_marker:
-        print('--ESL detected--')
-    else:
-        print('--No ESL detected--')
-
-if __name__ == '__main__':
-    main()
+    p=argparse.ArgumentParser(description="ESL barcode caller with optional HC1030")
+    p.add_argument("-i","--input",required=True);p.add_argument("-o","--output",default="Capy");p.add_argument("-t","--threads",type=int,default=4)
+    p.add_argument("-m","--metagenomic",action="store_true");p.add_argument("--subsample",type=float,default=1.0)
+    p.add_argument("--min-snp-depth",type=int,default=5);p.add_argument("--min-allele-frac",type=float,default=0.8)
+    args=p.parse_args()
+    if not os.path.exists(ESL_REF): sys.exit(f"ESL reference not found: {ESL_REF}")
+    sample=os.path.basename(args.input)
+    with tempfile.TemporaryDirectory() as td:
+        bam_esl=os.path.join(td,"esl.sorted.bam");map_to_bam(args.input,ESL_REF,args.threads,args.subsample,bam_esl)
+        flag_esl=samtools_flagstat(bam_esl);breadth=samtools_breadth(bam_esl)
+        lineage_calls,_=evaluate_panel(bam_esl,ESL_REF,lineage_snp,args.min_snp_depth,args.min_allele_frac)
+        variant_calls,_=evaluate_panel(bam_esl,ESL_REF,variant_snp,args.min_snp_depth,args.min_allele_frac)
+        lineage_call=decide_lineage(lineage_calls,args.min_snp_depth,args.min_allele_frac)
+        sublineage_call="NA"
+        if lineage_call!="NA": sublineage_call=decide_sublineage(lineage_call,variant_calls,args.min_snp_depth,args.min_allele_frac)
+        gc1,gc2="NA","NA";hc_markers=[]
+        if not args.metagenomic and HAS_HC and hc_ref:
+            bam_hc=os.path.join(td,"hc1030.sorted.bam");map_to_bam(args.input,hc_ref,args.threads,args.subsample,bam_hc)
+            hc_calls,hc_vcf=evaluate_panel(bam_hc,hc_ref,hc1030_snp,args.min_snp_depth,args.min_allele_frac)
+            gc1_cnt=gc2_cnt=0
+            for pos,(label,exp_ref,exp_alt,dp,af) in hc_calls.items():
+                status="lowcov"
+                if dp>=args.min_snp_depth and af>=args.min_allele_frac:
+                    ref,alt,_ar,_aa,_af=hc_vcf.get(pos,(".","",0,0,0.0));alt0=alt.split(",")[0]
+                    if ref==exp_ref and alt0==exp_alt:
+                        status="match"
+                        if label=="GC1": gc1_cnt+=1
+                        elif label=="GC2": gc2_cnt+=1
+                hc_markers.append((label,pos,exp_ref,exp_alt,dp,af,status))
+            gc1,gc2=str(gc1_cnt),str(gc2_cnt)
+        cov={"sample":sample,"mode":"metagenomic" if args.metagenomic else "isolate","lineage_call":lineage_call,"sublineage_call":sublineage_call,"gc1_votes":gc1,"gc2_votes":gc2,"reads_total":flag_esl.get("total",0),"reads_mapped":flag_esl.get("mapped",0),"breadth_ge1x":round(breadth,6),"variant_total":len(variant_snp),"variant_cov":sum(1 for (_lab,_r,_a,dp,_af) in variant_calls.values() if dp>=args.min_snp_depth)}
+        with open(f"{args.output}.coverage.json","wt") as outj: json.dump(cov,outj,indent=2)
+        with open(f"{args.output}.summary.tsv","wt") as outs:
+            outs.write("sample\tmode\tlineage\tsublineage\tGC1_votes\tGC2_votes\treads_total\treads_mapped\tbreadth\tvariant_cov\tvariant_total\n")
+            outs.write(f"{sample}\t{cov['mode']}\t{lineage_call}\t{sublineage_call}\t{gc1}\t{gc2}\t{cov['reads_total']}\t{cov['reads_mapped']}\t{cov['breadth_ge1x']}\t{cov['variant_cov']}\t{cov['variant_total']}\n")
+        with open(f"{args.output}.markers.tsv","wt") as outm:
+            outm.write("panel\tlabel\tpos\tref\talt\tdp\taf\tstatus\n")
+            for pos,(label,exp_ref,exp_alt,dp,af) in lineage_calls.items(): outm.write(f"lineage\t{label}\t{pos}\t{exp_ref}\t{exp_alt}\t{dp}\t{af:.3f}\t.\n")
+            for pos,(label,exp_ref,exp_alt,dp,af) in variant_calls.items(): outm.write(f"variant\t{label}\t{pos}\t{exp_ref}\t{exp_alt}\t{dp}\t{af:.3f}\t.\n")
+            if hc_markers:
+                for (label,pos,ref,alt,dp,af,status) in hc_markers: outm.write(f"hc1030\t{label}\t{pos}\t{ref}\t{alt}\t{dp}\t{af:.3f}\t{status}\n")
+    print(f"[OK] Wrote: {args.output}.summary.tsv, {args.output}.markers.tsv, {args.output}.coverage.json")
+if __name__=="__main__":
+    try: main()
+    except Exception as e: sys.stderr.write(f"[ERROR] {e}\n");sys.exit(1)
