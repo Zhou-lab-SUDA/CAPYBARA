@@ -1,0 +1,38 @@
+{
+  "distinct_nodes_with_mutations": 9443,
+  "duplicate_node_sequence_position_rows": 0,
+  "homoplasy_one_rate": 0.07001428406533157,
+  "homoplasy_one_rows": 97051,
+  "input": "D:\\Codex_tools\\Capy_debug\\data\\r4.rec.mutations.gz",
+  "invalid_rows": 0,
+  "missing_region_count": 4476,
+  "mutation_counts": {
+    "A->C": 45970,
+    "A->G": 257270,
+    "A->T": 61528,
+    "C->A": 49418,
+    "C->G": 27135,
+    "C->T": 253277,
+    "G->A": 267698,
+    "G->C": 26787,
+    "G->T": 47350,
+    "T->A": 61614,
+    "T->C": 242546,
+    "T->G": 45567
+  },
+  "mutation_rows": 1386160,
+  "node_type_counts": {
+    "internal": 3114,
+    "leaf": 6329
+  },
+  "out_of_range_rows": 0,
+  "semantics": "ancestral_branch_mutations_requires_matching_named_tree",
+  "sequence_counts": {
+    "NC_017847.1": 1386160
+  },
+  "sequence_lengths": {
+    "NC_017847.1": 3964912,
+    "NC_017848.1": 77528,
+    "NC_020524.1": 110967
+  }
+}

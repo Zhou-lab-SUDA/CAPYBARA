@@ -1,0 +1,2 @@
+sample	mode	esl	gc	lineage	sublineage	status	confidence	lineage_basis	gc_support	lineage_support	sublineage_support	callable_markers	matched_markers	conflicting_markers	reads_total	reads_mapped	alternatives	gate_method	gate_result	gate_distance	gate_margin
+GCF_022429585.1_ASM2242958v1_genomic.fna.gz	assembly	ESL	GC2	2.5	2.5.6	PASS	MEDIUM	INFERRED_FROM_CHILD_CLADE	0/0	2/2	1/1	48	3	0	2	1		MASH	GC2	0.00043444	0.00253458
