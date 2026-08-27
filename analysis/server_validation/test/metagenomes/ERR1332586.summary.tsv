@@ -1,0 +1,2 @@
+sample	mode	esl	gc	lineage	sublineage	status	confidence	lineage_basis	gc_support	lineage_support	sublineage_support	callable_markers	matched_markers	conflicting_markers	reads_total	reads_mapped	alternatives	gate_method	gate_result	gate_distance	gate_margin
+ERR1332586_1.fastq.gz	metagenomic	ESL	NA	NA	NA	INSUFFICIENT_COVERAGE	LOW	NONE	0/0	0/0	0/0	0	0	0	485	485		NOT_RUN	NOT_RUN		

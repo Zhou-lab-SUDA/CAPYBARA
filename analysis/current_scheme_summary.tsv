@@ -1,0 +1,4 @@
+panel	external_rows	external_unique_positions	configured_positions	external_rows_not_active	reference_ref_mismatches	duplicate_allele_conflicts
+hc1030	22	22	22	0	0	0
+lineage	8	8	8	0	2	0
+variant	51	50	50	1	0	1

@@ -1,0 +1,2 @@
+sample	mode	esl	gc	lineage	sublineage	status	confidence	lineage_basis	gc_support	lineage_support	sublineage_support	callable_markers	matched_markers	conflicting_markers	reads_total	reads_mapped	alternatives	gate_method	gate_result	gate_distance	gate_margin
+GCF_038441255.1_ASM3844125v1_genomic.fna.gz	assembly	ESL	NA	NA	NA	UNRESOLVED	LOW	NONE	0/0	0/0	0/0	74	0	0	3	2		MASH	GC2	0.00221642	0.00165936

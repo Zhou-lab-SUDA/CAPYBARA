@@ -1,127 +1,143 @@
-# CAPYBARA
+# CAPYBARA 2 (development)
 
-Capybara is a Core-snp Assignment PYthon tool for <i>Acinetobacter baumannii</i>. It screens either raw reads or assemblies for :
+CAPYBARA is a lightweight hierarchical canonical-SNP classifier for epidemic
+super-lineages of *Acinetobacter baumannii*. Version 2 replaces independent
+single-position score lookup with exact-allele, hierarchy-aware barcode rules.
 
-* Identifying whether a query belongs to the epidemic super-lineage (ESL), a super-set of two predominant international clones: IC1 and IC2.
-* Assignment of query strain into one of the lineages, clusters, and clades in the ESL based on a pre-curated set of SNPs. 
+This development database was reconstructed from `r4.labelled.nwk`, strain
+metadata, and the corresponding branch-mutation history. It must be benchmarked
+on independent genomes before release as a stable clinical or surveillance tool.
 
-## Citation
-Shengkai Li, Heng Li, Guilai Jiang, Shengke Wang, Min Wang, Yilei Wu, Xiao Liu, Ling Zhong, Shichang Xie, Yi Ren, Yongliang Lou, Jimei Du, Zhemin Zhou, 2024, Emergence and Global Spread of a Dominant Multidrug-Resistant Variant in *Acinetobacter baumannii*, [https://www.nature.com/articles/s41467-025-58106-9](https://www.nature.com/articles/s41467-025-58106-9)
+## Key behavior
 
-------
+- The expected `REF>ALT` allele is checked exactly.
+- Multiallelic AD is indexed using the expected ALT, not fixed `AD[1]`.
+- Assembly mapping uses minimap2 `asm5`; short reads use `sr`.
+- A child clade cannot override strong evidence for an incompatible parent.
+- Sibling support produces `AMBIGUOUS` or `MIXED`, not an arbitrary winner.
+- A clade can use one canonical SNP when that is the available phylogenetic
+  information; confidence remains limited.
+- Ordered `OVERRIDE_THEN_FALLBACK` rules represent shared anchors. For example,
+  `2860886 T>C` identifies 2.5.8 before `1733723 T>G` falls back to 2.5.6.
+- Missing calls never count as positive marker matches.
+- Marker definitions have one source of truth in external TSV files.
 
-## Installation:
-Capybara was devoloped and tested in Python 3.9.0, and requires several modules:
+## Requirements
 
-~~~~~~~~~~
-minimap2
-mash
-samtools
-bcftools
-~~~~~~~~~~
+- Python 3.9 or newer
+- minimap2
+- samtools
+- bcftools
+- Mash (assembly ESL/GC gate)
 
-You can easily install these packages using command below:
+The executables must be available on `PATH`.
 
-~~~~~~~~~~
-conda install -c bioconda samtools bcftools minimap2 mash
-~~~~~~~~~~
+## Database validation
 
-Then you can use git to clone Capybara into your PC.
+```bash
+python capy.py --validate-db
+```
 
-~~~~~~~~~~
-git clone git@github.com:Zhou-lab-SUDA/CAPYBARA.git
-~~~~~~~~~~
+Validation checks hierarchy integrity, REF/ALT validity, reference coordinates,
+homoplasy limits, duplicate rows, rule targets, missing rule markers, and
+unresolved nodes. Errors prevent classification; scientifically explicit
+limitations are warnings.
 
-## Quick Start (with examples)
+## Assembly mode
 
-~~~~~~~~~~
-$ cd /path/to/Capybara/
+```bash
+python capy.py --assembly genome.fna.gz -o results/sample -t 4
+```
 
-$ python capy.py -i examples/2.5.6.fa
-~~~~~~~~~~
+Backward-compatible single-assembly input remains available:
 
-It will generate a report file for Examples/2.5.6.fa about its population.
+```bash
+python capy.py -i genome.fna.gz -o results/sample
+```
 
-A single run for an assembled genome will finish <3 minutes for a 4 CPUs laptop (>10 minutes for short reads).
+Assembly defaults are DP >= 1, AF >= 0.90, MAPQ >= 20, and base quality >= 20.
+Alignment depth represents callable alignment support, not sequencing coverage.
+Before barcode traversal, Mash compares the assembly to the labelled reference
+sketch database. The development defaults require distance <= 0.02 and a
+nearest-class margin >= 0.0005. A nearest non-ST1/ST2 reference returns
+`NON_ESL`; Mash does not define the terminal clade.
 
-## Usage
+## Isolate paired reads
 
-~~~~~~~~~~
-$ Usage: capy.py [OPTIONS]
+```bash
+python capy.py -1 sample_R1.fastq.gz -2 sample_R2.fastq.gz \
+  -o results/sample -t 4
+```
 
-Options:
+Read defaults are DP >= 10, expected-ALT AF >= 0.90, MAPQ >= 20, and base
+quality >= 20.
 
-  -i, --input TEXT  [Required] Input data, both assembled genome or short reads are acceptable.
+## Metagenomic mode
 
-  -o, --output TEXT [Optional] Prefix for output file. Default as Capy.
+```bash
+python capy.py --metagenomic -1 sample_R1.fastq.gz -2 sample_R2.fastq.gz \
+  -o results/sample -t 4
+```
 
-  -t, --threads INTEGER [Optional] Number of process to use. default: 4.
+Single-file metagenomic input is also accepted with `--metagenomic -i`. Initial
+development defaults are DP >= 2 and expected-ALT AF >= 0.20. These thresholds
+are provisional and must be calibrated with the validation data. Simultaneously
+supported clades are reported as `MIXED` rather than collapsed to one label.
 
-  -m, --metagenomic Metagenomic mode, skip CC assignment.
+## Outputs
 
-  --subsample SUBSAMPLE [0-1] Subsample proportion when handling short reads.
+For prefix `results/sample`, CAPYBARA writes:
 
-  --min-snp-depth MIN_SNP_DEPTH
+- `results/sample.summary.tsv`: compact hierarchical result and status.
+- `results/sample.markers.tsv`: every evaluated marker, expected and observed
+  alleles, DP, expected-ALT depth, AF, quality filter, and marker status.
+- `results/sample.evidence.json`: thresholds and node-level evidence.
 
-  --min-allele-frac MIN_ALLELE_FRAC
+Possible statuses include `PASS`, `UNRESOLVED`, `AMBIGUOUS`, `MIXED`,
+`INSUFFICIENT_COVERAGE`, `CONFLICTING_MARKERS`, and `NON_ESL`.
 
-  --help    Show this message and exit.
+## Authoritative database
 
-~~~~~~~~~~
+The runtime database is:
 
-Capybara generates three report files:
+```text
+capydb/esl/
+├── esl_ref.fna
+├── hierarchy.tsv
+├── markers.tsv
+└── clade_rules.tsv
+```
 
-[Output].summary.tsv (Metagenomic version will NOT show the lineage/sublineage assignment):
-| sample | mode | lineage | sublineage | GC1_votes | GC2_votes | reads_total | reads_mapped  | best_score | variant_total |
-| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| 2.5.6.fa | metagenomic | NA | NA | NA | NA | 1472092 | 12905 | 0.001392 | 0 | 0 |
-[Output].summary.tsv (Isolate version)
-| sample | mode | lineage | sublineage | GC1_votes | GC2_votes | reads_total | reads_mapped  | best_score | variant_total |
-| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
-| 2.5.6.fa | isolate | 2.5 | 2.5.6 | 0 | 7 | 107 | 103 | 0.001392 | 1.0 | 50 |
+`configure.py` contains only paths, executable discovery, and default settings.
+It contains no biological marker dictionaries.
 
-[Output].markers.tsv:
+## Rebuilding the barcode
 
-Detailed calling description for each SNP barcode. Lineage/sublineage assignment for metagenomic samples can be found here.
+The reproducible analytical scripts are kept separate from `capy.py`:
 
-[Output].summary.tsv:
+```text
+scripts/parse_metadata.py
+scripts/parse_mutations.py
+scripts/build_hierarchy.py
+scripts/discover_markers.py
+scripts/build_clade_rules.py
+scripts/select_markers.py
+```
 
-Json format SNP coverage summary.
+Candidate selection uses homoplasy <= 10. Exclusive candidates are checked
+against the complete reconstructed mutation distribution, including events from
+other clades that would themselves be rejected for high homoplasy. Shared
+anchors can only be used through explicit ordered override/fallback rules.
 
-## Work flow and Reproduction Instructions
+## Tests
 
-### Work flow
+```bash
+python -m unittest discover -s tests -v
+```
 
-A basic run for Capybara is as follows: 
-* **ESL identification:**
-	* We pre-sketched all 5,824 representative genomes. Genetic distance between query data and pre-sketched data will be evaluated to find the most closed genomes.
-	* If query data does not contains any sequential information related to ESL genomes, it will be classified as non-ESL. Otherwise, it will be analyzed as follows.
-* **Sequential alignment:**
-	* Query data will be aligned onto ESL's reference genome (MDR-TJ:GCF_000187205.2) to generate a BAM file.
-* **SNP calling:**
-	* A series SNPs will be called from BAM and then generate an VCF file.
-* **Population assignment:**
-	* Using a pre-built SNP scheme to assign hierarchical population of query data.
+The tests include wrong ALT, multiallelic ALT depth, weak child versus
+incompatible parent, incomplete child panels, sibling conflict, missing loci,
+non-ESL input, mixed samples, and the 2.5.8-over-2.5.6 rule.
 
-
-Workflow chart:
-
-<img src="https://github.com/Zhou-lab-SUDA/CAPYBARA/blob/main/workflow.png" width="300px">
-
-### Reproduction Instructions
-All data required for reproduction of the analysis were distributed in this repository under CAPYBARA/capydb/
-
-which included:
-* esl/esl.fna
-~~~
-Reference genome for ESL.
-~~~
-* msh/*.msh
-~~~
-5,824 pre-sketched files by Mash sketch.
-~~~
-### Our pulished release
-You may also be interested [KleTy](https://github.com/Zhou-lab-SUDA/KleTy), a pipeline for analysis of Klebsiella and can also genotype plasmids from short-reads file.
-
-
-<a href="https://zenodo.org/doi/10.5281/zenodo.11349698"><img src="https://zenodo.org/badge/803854575.svg" alt="DOI"></a>
+See `docs/technical_audit.md` and `docs/marker_selection_policy.md` for the
+current audit evidence and marker policy.

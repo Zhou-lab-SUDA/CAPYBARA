@@ -1,0 +1,28 @@
+severity	code	node	detail
+HIGH	METADATA_LINEAGE_MISSING_FROM_SCHEME	2.4	No current lineage marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.1.2	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.3.1	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.3	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.4	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.5	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.6	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.7	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.8	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.9	No current terminal marker
+HIGH	METADATA_SUBLINEAGE_MISSING_FROM_SCHEME	1.4.10	No current terminal marker
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.2.2	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.3	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.4	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.5	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.6	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.7	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.8	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.9	Current scheme node not observed in supplied ground truth
+HIGH	SCHEME_SUBLINEAGE_ABSENT_FROM_METADATA	1.3.10	Current scheme node not observed in supplied ground truth
+INFO	UNRESOLVED_BUCKET	1.3.0	Preserved from metadata but excluded as a classifiable child
+INFO	UNRESOLVED_BUCKET	1.4.0	Preserved from metadata but excluded as a classifiable child
+INFO	UNRESOLVED_BUCKET	2.1.0	Preserved from metadata but excluded as a classifiable child
+INFO	UNRESOLVED_BUCKET	2.2.0	Preserved from metadata but excluded as a classifiable child
+INFO	UNRESOLVED_BUCKET	2.3.0	Preserved from metadata but excluded as a classifiable child
+INFO	UNRESOLVED_BUCKET	2.4.0	Preserved from metadata but excluded as a classifiable child
+INFO	UNRESOLVED_BUCKET	2.5.0	Preserved from metadata but excluded as a classifiable child

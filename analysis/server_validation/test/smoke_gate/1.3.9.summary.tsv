@@ -1,0 +1,2 @@
+sample	mode	esl	gc	lineage	sublineage	status	confidence	lineage_basis	gc_support	lineage_support	sublineage_support	callable_markers	matched_markers	conflicting_markers	reads_total	reads_mapped	alternatives	gate_method	gate_result	gate_distance	gate_margin
+1.3.9.fa	assembly	ESL	NA	NA	NA	UNRESOLVED	LOW	NONE	0/0	0/0	0/0	64	0	0	42	42		MASH	GC1	0.00000000	0.00351914

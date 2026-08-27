@@ -1,0 +1,2 @@
+sample	mode	esl	gc	lineage	sublineage	status	confidence	lineage_basis	gc_support	lineage_support	sublineage_support	callable_markers	matched_markers	conflicting_markers	reads_total	reads_mapped	alternatives	gate_method	gate_result	gate_distance	gate_margin
+Non-esl.fa	assembly	NON_ESL	NA	NA	NA	NON_ESL	HIGH	MASH_GATE	0/0	0/0	0/0	56	0	0	38	38	nearest labelled reference is outside ST1/ST2	MASH	NON_ESL	0.00000000	0.01813130
